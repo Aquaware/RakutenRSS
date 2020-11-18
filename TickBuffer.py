@@ -46,3 +46,9 @@ class TickBuffer(object):
                 t_old = t        
         self.buffer = buf.copy()
         return out
+    
+    def allOut(self):
+        out = self.flush()
+        out += self.buffer
+        return out
+        

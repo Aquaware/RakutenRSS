@@ -36,7 +36,8 @@ class Streaming(object):
             #print('Tick:', t, p, v)
             if self.old_volume is not None:
                 if v > self.old_volume:
-                    data = (t, p, float(v - self.old_volume)) 
+                    data = (t, p, float(v - self.old_volume))
+                    print('tick: ', t, p, float(v - self.old_volume), v)
                     self.old_volume = v
                     break
             else:
@@ -58,14 +59,19 @@ def beginTime():
     else:
         return tbegin
 
+def begin():
+    now = datetime.now()
+    tend = datetime(now.year, now.month, now.day, 8, 40)
+    return tend
+
 def dayEnd():
     now = datetime.now()
-    tend = datetime(now.year, now.month, now.day, 15, 31)
+    tend = datetime(now.year, now.month, now.day, 15, 40)
     return tend
 
 def nightEnd():
     now = datetime.now()
-    tend = datetime(now.year, now.month, now.day, 5, 31)
+    tend = datetime(now.year, now.month, now.day, 5, 40)
     tend += timedelta(days=1)
     return tend
     
@@ -80,14 +86,20 @@ def ticks():
     
     buffer = TickBuffer()
     streaming = Streaming(NK225F, 0.05)
+    tbegin = begin()
     tsave = dayEnd()
     tend = nightEnd()
+    print('Begin:', tbegin, 'Save:', tsave, 'End:', tend)
     while now <= tend:
+        if now < tbegin:
+            time.sleep(60)
+            now = datetime.now()
+            continue
         data = streaming.tick()
         (t, price, volume) = data
         if t is not None:
             if t > tbegin:
-                print('Tick: ', t, price, volume)
+                #print('Tick: ', t, price, volume)
                 buffer.add([t, price, price, price, volume])
                 if buffer.length() > 20:
                     tick_list = buffer.flush()
@@ -100,7 +112,8 @@ def ticks():
                 #print(tick_list)
                 db.insert(table, tick_list)
                 tsave = None
-
+    print('loop end')
+    
     # loop end            
     tick_list = buffer.flush()
     if len(tick_list) > 0:
