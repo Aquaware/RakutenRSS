@@ -9,7 +9,7 @@ NK225F = 'N225.FUT01.OS'
 
 def optionCode(year, month, call_or_put, price_range, should_weekly_option):
 
-    df = pd.read_csv('./rb20201116.csv', encoding='sjis')
+    df = pd.read_csv('./rb20201119.csv', encoding='sjis')
     all_codes = list(df['銘柄コード'].values)
     all_contract = list(df['限月'].values)
     all_names = list(df['銘柄名称'].values)
