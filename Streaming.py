@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import pandas as pd
-from lib.ddeclient import DDEClient
+#from lib.ddeclient import DDEClient
 from datetime import datetime, timedelta
 import time
 from RakutenRSS import RakutenRSS
@@ -108,18 +108,24 @@ def ticks():
         now = datetime.now()
         if tsave is not None:
             if now > tsave:
-                tick_list = buffer.flush()
-                #print(tick_list)
-                db.insert(table, tick_list)
+                tick_list = buffer.allOut()
+                if len(tick_list) > 0:
+                    db.insert(table, tick_list)
                 tsave = None
+                
+        if tend is not None:
+            if now > tend:
+                tick_list = buffer.allOut()
+                if len(tick_list) > 0:
+                    db.insert(table, tick_list)
+                tend = None
+                
     print('loop end')
     
     # loop end            
-    tick_list = buffer.flush()
+    tick_list = buffer.allOut()
     if len(tick_list) > 0:
         db.insert(table, tick_list)
-    if buffer.length() > 0:
-        db.insert(table, buffer.buffer)
         
         
 def test():

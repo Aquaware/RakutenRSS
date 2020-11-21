@@ -1,5 +1,11 @@
+import os
+import sys
+current_dir = os.path.abspath(os.path.dirname(__file__))
+sys.path.append('./lib')
+
+
 import pandas as pd
-from lib.ddeclient import DDEClient
+from ddeclient import DDEClient
 from datetime import datetime
 import time
 
