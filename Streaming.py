@@ -3,7 +3,7 @@ import pandas as pd
 #from lib.ddeclient import DDEClient
 from datetime import datetime, timedelta
 import time
-from RakutenRSS import RakutenRSS
+from RakutenRSS import RakutenRSS, optionCode
 from PriceDatabase import PriceDatabase, TickTable
 from TickBuffer import TickBuffer
 
@@ -13,6 +13,7 @@ TABLE_NAME = 'NK225F'
 class Streaming(object):
     
     def __init__(self, code, interval_sec):
+        self.code = code
         self.old_volume = None
         self.interval = interval_sec
         try:
@@ -127,6 +128,8 @@ def ticks():
     if len(tick_list) > 0:
         db.insert(table, tick_list)
         
+    return
+        
         
 def test():
     db = PriceDatabase()    
@@ -152,8 +155,17 @@ def test():
     l = buffer.flush()
     print('2', l)
     print('3', buffer.buffer)
-    
-            
+ 
+def test2():
+    codes = optionCode(2020, 12, 'put', [15000, 25000], False)
+    streaming = []
+    for code in codes:
+        s = Streaming(code[0], 0.05)
+        streaming.append(s)
+    for stream in streaming:
+        print(stream.code, stream.tick())
+        
+        
 if __name__ == '__main__':
-    ticks()
-    #test()
+    #ticks()
+    test2()
